@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>404 - Page Not Found</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #2e2e2e;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 0 1rem;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        h1 {
+            font-size: 8rem;
+            margin: 0;
+            color: #f44336;
+            text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+            animation: shake 1.5s ease-in-out infinite;
+        }
+
+        p {
+            font-size: 1.5rem;
+            color: #ccc;
+            margin-top: 1rem;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.8rem 2rem;
+            font-size: 1.2rem;
+            background-color: #f44336;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #d32f2f;
+        }
+
+        /* Animations */
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-10px);
+            }
+
+            50% {
+                transform: translateX(10px);
+            }
+
+            75% {
+                transform: translateX(-10px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Background Animation */
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: #000 url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/1231630/stars.png') repeat top center;
+            z-index: -1;
+            animation: moveStars 60s linear infinite;
+        }
+
+        @keyframes moveStars {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: 10000px 10000px;
+            }
+        }
+
+        /* RESPONSIVE DESIGN */
+
+        @media only screen and (max-width: 1200px) {
+            h1 {
+                font-size: 6rem;
+            }
+
+            p {
+                font-size: 1.3rem;
+            }
+
+            a {
+                padding: 0.7rem 1.8rem;
+                font-size: 1.1rem;
+            }
+        }
+
+        @media only screen and (max-width: 768px) {
+            h1 {
+                font-size: 5rem;
+            }
+
+            p {
+                font-size: 1.2rem;
+            }
+
+            a {
+                padding: 0.6rem 1.5rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media only screen and (max-width: 480px) {
+            h1 {
+                font-size: 4rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+
+            a {
+                padding: 0.5rem 1.2rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media only screen and (max-width: 320px) {
+            h1 {
+                font-size: 3rem;
+            }
+
+            p {
+                font-size: 0.9rem;
+            }
+
+            a {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="stars"></div>
+    <div class="container">
+        <h1>404</h1>
+        <p>Oops! The page you're looking for doesn't exist.</p>
+    </div>
+</body>
+
+</html>

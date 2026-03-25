@@ -1,0 +1,20 @@
+# Ignore node modules from the host system
+node_modules
+
+# Ignore build outputs
+dist
+
+# Ignore logs
+*.log
+
+# Ignore Docker-related files if they are not needed inside the container
+Dockerfile
+docker-compose*
+
+# Ignore git files
+.git
+.gitignore
+
+# Ignore IDE/editor-specific files
+.vscode
+.idea
