@@ -1,13 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { InjectModel } from '@nestjs/mongoose';
-import { EDbModelName } from '@modules/database/constants';
-import { Model } from 'mongoose';
 import { I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from 'src/generated/i18n.generated';
-import { OtpDocument } from '../schemas/otp.schema';
 import { EOtpType } from '../constants';
 import dayjs from 'dayjs';
+import { PrismaService } from '@modules/database';
 
 @Injectable()
 export class OtpService {
@@ -15,8 +12,7 @@ export class OtpService {
 
   constructor(
     private readonly configService: ConfigService,
-    @InjectModel(EDbModelName.Otp)
-    private readonly otpModel: Model<OtpDocument>,
+    private readonly prisma: PrismaService,
     private readonly i18n: I18nService<I18nTranslations>,
   ) {}
 
@@ -52,13 +48,16 @@ export class OtpService {
 
   async generateUniqueOtp(): Promise<string> {
     let otp: string;
-    let existingOtp: OtpDocument | null;
+    let existingOtp: { id: string } | null;
 
     do {
       otp = Array.from({ length: 6 }, () =>
         Math.floor(Math.random() * 10),
       ).join('');
-      existingOtp = await this.otpModel.findOne({ otp });
+      existingOtp = await this.prisma.otp.findFirst({
+        where: { otp },
+        select: { id: true },
+      });
     } while (existingOtp);
 
     return otp;
@@ -76,17 +75,28 @@ export class OtpService {
     otpType: EOtpType,
     expires: dayjs.Dayjs,
   ) {
-    const userOtpData = await this.otpModel.findOne({
-      user: userId,
-      type: otpType,
+    const userOtpData = await this.prisma.otp.findFirst({
+      where: {
+        userId,
+        type: otpType as any,
+      },
+      select: { id: true },
     });
+
     if (userOtpData) {
-      await this.otpModel.updateOne(
-        { user: userId, type: otpType },
-        { otp, expires },
-      );
+      await this.prisma.otp.update({
+        where: { id: userOtpData.id },
+        data: { otp, expires: expires.toDate() },
+      });
     } else {
-      await this.otpModel.create({ user: userId, otp, type: otpType, expires });
+      await this.prisma.otp.create({
+        data: {
+          userId,
+          otp,
+          type: otpType as any,
+          expires: expires.toDate(),
+        },
+      });
     }
   }
 }

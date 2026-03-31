@@ -5,10 +5,15 @@ import { validate } from './common/validators';
 import { DatabaseModule } from '@modules/database';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from '@common/exceptions';
-import { LoggerMiddleware, LoggerService } from '@common/logger';
+import {
+  AuditLogMiddleware,
+  LoggerMiddleware,
+  LoggerService,
+} from '@common/logger';
 import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { HealthController } from './health/health.controller';
 
 @Module({
   imports: [
@@ -36,6 +41,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       exclude: ['/api/(.*)'],
     }),
   ],
+  controllers: [HealthController],
   providers: [
     LoggerService,
     {
@@ -46,6 +52,6 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*');
+    consumer.apply(LoggerMiddleware, AuditLogMiddleware).forRoutes('*');
   }
 }

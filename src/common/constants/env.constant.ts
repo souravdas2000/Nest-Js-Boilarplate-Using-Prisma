@@ -27,6 +27,7 @@ export interface IEnvConfig {
   SWAGGER_USER_PASSWORD: string;
   FALLBACK_LANGUAGE: string;
   SUPPORT_EMAIL: string;
+  PRISMA_SLOW_QUERY_THRESHOLD_MS?: number;
 }
 
 export enum EEnvironment {

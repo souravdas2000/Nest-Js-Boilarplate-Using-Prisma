@@ -3,12 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import dayjs from 'dayjs';
 import { ETokenType } from '../constants';
-import { InjectModel } from '@nestjs/mongoose';
-import { EDbModelName } from '@modules/database/constants';
-import { Model } from 'mongoose';
-import { TokenDocument } from '../schemas/token.schema';
 import { I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from 'src/generated/i18n.generated';
+import { PrismaService } from '@modules/database';
 
 @Injectable()
 export class JwtTokenService {
@@ -17,8 +14,7 @@ export class JwtTokenService {
   constructor(
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
-    @InjectModel(EDbModelName.Token)
-    private readonly tokenModel: Model<TokenDocument>,
+    private readonly prisma: PrismaService,
     private readonly i18n: I18nService<I18nTranslations>,
   ) {}
 
@@ -44,37 +40,41 @@ export class JwtTokenService {
     tokenType: ETokenType,
     blacklisted = false,
   ) {
-    const tokenDoc = await this.tokenModel.create({
-      token,
-      user: userId,
-      expires: expires.toDate(),
-      type: tokenType,
-      blacklisted,
+    return this.prisma.token.create({
+      data: {
+        token,
+        userId,
+        expires: expires.toDate(),
+        type: tokenType as any,
+        blacklisted,
+      },
     });
-    return tokenDoc;
   }
 
   async verifyToken(token: string, tokenType: ETokenType) {
-    const payload = await this.jwtService.verifyAsync(token, {
+    const payload = await this.jwtService.verifyAsync<{ sub: string }>(token, {
       secret: this.configService.get('JWT_SECRET_KEY'),
     });
-    const tokenDoc = await this.tokenModel.findOne({
-      token,
-      type: tokenType,
-      user: payload.sub,
-      blacklisted: false,
+    const tokenDoc = await this.prisma.token.findFirst({
+      where: {
+        token,
+        type: tokenType as any,
+        userId: payload.sub,
+        blacklisted: false,
+      },
     });
+
     if (!tokenDoc) {
       throw new UnauthorizedException(this.i18n.t('message.tokenNotFound'));
     }
     return tokenDoc;
   }
 
-  async deleteToken(refreshToken: any) {
-    await this.tokenModel.deleteOne({ _id: refreshToken.id });
+  async deleteToken(refreshToken: { id: string }) {
+    await this.prisma.token.delete({ where: { id: refreshToken.id } });
   }
 
-  async generateAuthTokens(user: any): Promise<{
+  async generateAuthTokens(user: { id: string }): Promise<{
     access: {
       token: string;
       expires: Date;

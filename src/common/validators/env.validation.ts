@@ -4,6 +4,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   validateSync,
 } from 'class-validator';
@@ -120,6 +121,10 @@ class EnvironmentVariables implements IEnvConfig {
   @IsString()
   @IsNotEmpty()
   SUPPORT_EMAIL: string;
+
+  @IsNumber()
+  @IsOptional()
+  PRISMA_SLOW_QUERY_THRESHOLD_MS?: number;
 }
 
 export function validate(config: Record<string, unknown>) {

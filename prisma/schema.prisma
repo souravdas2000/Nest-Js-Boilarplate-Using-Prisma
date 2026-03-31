@@ -1,0 +1,176 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  customer
+}
+
+enum SignupBy {
+  custom
+  google
+  facebook
+}
+
+enum AccountType {
+  private
+  public
+}
+
+enum OtpType {
+  verify_email
+  reset_password
+}
+
+enum TokenType {
+  access
+  refresh
+}
+
+model User {
+  id                        String      @id @default(uuid())
+  first_name                String
+  last_name                 String
+  user_name                 String?
+  email                     String
+  date_of_birth             String?
+  password                  String      @default("")
+  social_id                 String?
+  gender                    String?
+  signup_by                 SignupBy    @default(custom)
+  last_login_time           DateTime?
+  about                     String?
+  profile_picture           String      @default("")
+  cover_picture             String?
+  video_picture             String?
+  facebook_profile          String?
+  twitter_profile           String?
+  instagram_profile         String?
+  youtube_profile           String?
+  customer_id               String?
+  is_active                 Boolean     @default(true)
+  is_deleted                Boolean     @default(false)
+  is_accept_term_condition  Boolean     @default(true)
+  is_email_verified         Boolean     @default(false)
+  account_type              AccountType @default(public)
+  is_account_private        Boolean     @default(false)
+  is_show_followers         Boolean     @default(true)
+  is_show_friends           Boolean     @default(true)
+  is_show_likes             Boolean     @default(true)
+  user_location             String?
+  is_live                   Boolean     @default(false)
+  letterbox                 String?
+  is_banned                 Boolean     @default(false)
+  banned_start_time         DateTime?
+  banned_end_time           DateTime?
+  role                      Role        @default(customer)
+  created_at                DateTime    @default(now())
+  updated_at                DateTime    @updatedAt
+
+  otps                      Otp[]
+  tokens                    Token[]
+  error_logs                ErrorLog[]
+  audit_logs                AuditLog[]
+
+  @@unique([email])
+  @@unique([user_name])
+  @@index([email])
+  @@index([user_name])
+  @@index([role])
+  @@index([is_deleted, is_active])
+  @@index([is_deleted, is_active, role])
+  @@map("users")
+}
+
+model ErrorLog {
+  id             String   @id @default(uuid())
+  userId         String?  @map("user_id")
+  status_code    Int?
+  error_name     String?
+  message        String
+  stack          String?
+  method         String?
+  path           String?
+  ip_address     String?
+  user_agent     String?
+  request_body   String?
+  request_query  String?
+  request_params String?
+  created_at     DateTime @default(now())
+
+  user           User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([created_at])
+  @@index([status_code])
+  @@index([path])
+  @@index([userId])
+  @@map("errorLogs")
+}
+
+model AuditLog {
+  id             String   @id @default(uuid())
+  userId         String?  @map("user_id")
+  action         String
+  entity         String
+  entity_id      String?
+  description    String?
+  old_values     String?
+  new_values     String?
+  metadata       String?
+  method         String?
+  path           String?
+  ip_address     String?
+  user_agent     String?
+  created_at     DateTime @default(now())
+
+  user           User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([created_at])
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([entity_id])
+  @@map("auditLogs")
+}
+
+model Otp {
+  id         String   @id @default(uuid())
+  otp        String
+  userId     String   @map("user_id")
+  type       OtpType
+  expires    DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([otp])
+  @@index([userId, type])
+  @@index([userId, type, expires])
+  @@map("otps")
+}
+
+model Token {
+  id          String    @id @default(uuid())
+  token       String
+  userId      String    @map("user_id")
+  type        TokenType
+  expires     DateTime
+  blacklisted Boolean   @default(false)
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@unique([token])
+  @@index([token])
+  @@index([userId, type, blacklisted])
+  @@index([userId, type, blacklisted, expires])
+  @@map("tokens")
+}

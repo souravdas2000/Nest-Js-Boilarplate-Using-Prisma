@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createLogger, format, transports } from 'winston';
-import 'winston-mongodb';
 
 @Injectable()
 export class LoggerService {
@@ -22,12 +21,9 @@ export class LoggerService {
           format.printf(({ level, message }) => `${level}: ${message}`),
         ),
       }),
-      new transports.MongoDB({
+      new transports.File({
         level: 'error',
-        db: this.configService.get<string>('DATABASE_URL'),
-        collection: 'logger',
-        options: { useUnifiedTopology: true },
-        tryReconnect: true,
+        filename: 'error.log',
         format: this.formattedLogger,
       }),
     ],

@@ -1,3 +1,5 @@
-import { UserDocument } from '@modules/user/schemas/user.schema';
-
-export type TGuardUser = UserDocument;
+export type TGuardUser = {
+  id: string;
+  email: string;
+  role: string;
+};
