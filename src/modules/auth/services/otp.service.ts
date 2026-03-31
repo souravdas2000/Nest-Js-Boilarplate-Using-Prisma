@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from 'src/generated/i18n.generated';
@@ -8,8 +8,6 @@ import { PrismaService } from '@modules/database';
 
 @Injectable()
 export class OtpService {
-  private readonly logger = new Logger(OtpService.name);
-
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,

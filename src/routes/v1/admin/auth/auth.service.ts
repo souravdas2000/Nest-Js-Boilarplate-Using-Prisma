@@ -8,7 +8,7 @@ import { JwtTokenService, OtpService } from '@modules/auth/services';
 import { PrismaService } from '@modules/database';
 import { EmailService } from '@modules/email/services';
 import { ERole } from '@modules/user/constants';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
 import { I18nService } from 'nestjs-i18n';
@@ -22,8 +22,6 @@ import { AdminRegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
-  private readonly logger = new Logger(AuthService.name);
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtTokenService: JwtTokenService,

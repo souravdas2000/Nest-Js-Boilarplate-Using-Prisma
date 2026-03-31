@@ -1,4 +1,4 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import dayjs from 'dayjs';
@@ -9,8 +9,6 @@ import { PrismaService } from '@modules/database';
 
 @Injectable()
 export class JwtTokenService {
-  private readonly logger = new Logger(JwtTokenService.name);
-
   constructor(
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
